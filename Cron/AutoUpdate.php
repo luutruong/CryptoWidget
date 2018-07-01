@@ -3,10 +3,11 @@
  * @license
  * Copyright 2018 TruongLuu. All Rights Reserved.
  */
+
 namespace Truonglv\CryptoWidget\Cron;
 
-use Truonglv\CryptoWidget\Api;
 use XF\Entity\Widget;
+use Truonglv\CryptoWidget\Api;
 
 class AutoUpdate
 {

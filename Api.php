@@ -3,6 +3,7 @@
  * @license
  * Copyright 2018 TruongLuu. All Rights Reserved.
  */
+
 namespace Truonglv\CryptoWidget;
 
 class Api

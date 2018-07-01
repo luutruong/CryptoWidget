@@ -3,10 +3,11 @@
  * @license
  * Copyright 2018 TruongLuu. All Rights Reserved.
  */
+
 namespace Truonglv\CryptoWidget\Widget;
 
-use Truonglv\CryptoWidget\Api;
 use XF\Widget\AbstractWidget;
+use Truonglv\CryptoWidget\Api;
 
 class Crypto extends AbstractWidget
 {
