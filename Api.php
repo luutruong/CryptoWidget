@@ -22,7 +22,7 @@ class Api
 
     public function getAllCrypto()
     {
-        return $this->request('GET', 'listing');
+        return $this->request('GET', 'listings');
     }
 
     public function getItem($id)
