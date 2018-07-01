@@ -1,0 +1,1 @@
+[tl] Crypto Widget: Update crypto data (every 5 minutes)

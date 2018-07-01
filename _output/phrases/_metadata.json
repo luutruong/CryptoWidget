@@ -1,0 +1,26 @@
+{
+    "cron_entry.tlcryptowidget_updates.txt": {
+        "global_cache": false,
+        "version_id": 1000000,
+        "version_string": "1.0.0",
+        "hash": "6e368c3ec5d56dce3daa44e993506cbe"
+    },
+    "tl_crypto_widget.show_cryptos.txt": {
+        "global_cache": false,
+        "version_id": 1000000,
+        "version_string": "1.0.0",
+        "hash": "df969fc2a0f75dc151b91d9e992d370b"
+    },
+    "widget_def.tl_cryptowidget.txt": {
+        "global_cache": false,
+        "version_id": 1000000,
+        "version_string": "1.0.0",
+        "hash": "7b9e4d563f65f18bd4596e1943cdde95"
+    },
+    "widget_def_desc.tl_cryptowidget.txt": {
+        "global_cache": false,
+        "version_id": 1000000,
+        "version_string": "1.0.0",
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+}

@@ -1,0 +1,23 @@
+<xf:if is="$data">
+    <div class="block">
+        <div class="block-container">
+            <xf:if is="$title"><h3 class="block-minorHeader">{$title}</h3></xf:if>
+            <div class="block-body">
+                <xf:foreach loop="$data" value="$item">
+                    <xf:datalist>
+                        <xf:datarow rowclass="dataList-row--subSection">
+                            <xf:cell>{$item.name} ({$item.symbol})</xf:cell>
+                            <xf:cell></xf:cell>
+                        </xf:datarow>
+                        <xf:foreach loop="{$item.quotes}" value="$quote" key="$currency">
+                            <xf:datarow>
+                                <xf:cell>{$currency}</xf:cell>
+                                <xf:cell>{$quote.price}</xf:cell>
+                            </xf:datarow>
+                        </xf:foreach>
+                    </xf:datalist>
+                </xf:foreach>
+            </div>
+        </div>
+    </div>
+</xf:if>

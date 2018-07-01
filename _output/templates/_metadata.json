@@ -1,0 +1,12 @@
+{
+    "admin/tl_crypto_widget_options_crypto.html": {
+        "version_id": 1000000,
+        "version_string": "1.0.0",
+        "hash": "21c6480751213874530716c88ed20380"
+    },
+    "public/tl_crypto_widget_crypto.html": {
+        "version_id": 1000000,
+        "version_string": "1.0.0",
+        "hash": "1630916c709ffadf1194591603fb4fc9"
+    }
+}
