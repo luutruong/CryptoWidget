@@ -5,6 +5,18 @@
         "version_string": "1.0.0",
         "hash": "6e368c3ec5d56dce3daa44e993506cbe"
     },
+    "tl_crypto_widget.crypto_logo.txt": {
+        "global_cache": false,
+        "version_id": 1000000,
+        "version_string": "1.0.0",
+        "hash": "7041442651e96edaa9d6560bd61520b8"
+    },
+    "tl_crypto_widget.icon_url.txt": {
+        "global_cache": false,
+        "version_id": 1000000,
+        "version_string": "1.0.0",
+        "hash": "6a10d3dda551f509ce57029169a4d4e4"
+    },
     "tl_crypto_widget.show_cryptos.txt": {
         "global_cache": false,
         "version_id": 1000000,

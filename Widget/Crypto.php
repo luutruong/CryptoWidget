@@ -30,6 +30,11 @@ class Crypto extends AbstractWidget
         foreach ($options['crypto_ids'] as $cryptoId) {
             if (isset($cacheData[$cryptoId])) {
                 $data[$cryptoId] = $cacheData[$cryptoId];
+                if (!empty($options['icons'])
+                    && isset($options['icons'][$cryptoId])
+                ) {
+                    $data[$cryptoId]['iconUrl'] = $options['icons'][$cryptoId];
+                }
             }
         }
 
@@ -47,6 +52,11 @@ class Crypto extends AbstractWidget
 
         if ($context === 'options') {
             $params['cryptoList'] = Api::getInstance()->getAllCrypto();
+            if (!empty($params['options']['crypto_ids'])) {
+                $params['activeCryptos'] = array_filter($params['cryptoList'], function ($item) use($params) {
+                    return in_array($item['id'], $params['options']['crypto_ids']);
+                });
+            }
         }
 
         return $params;
@@ -60,7 +70,8 @@ class Crypto extends AbstractWidget
     public function verifyOptions(\XF\Http\Request $request, array &$options, &$error = null)
     {
         $options = $request->filter([
-            'crypto_ids' => 'str'
+            'crypto_ids' => 'str',
+            'icons' => 'array'
         ]);
 
         $cryptoIds = explode(',', $options['crypto_ids']);
@@ -68,6 +79,14 @@ class Crypto extends AbstractWidget
         $cryptoIds = array_unique($cryptoIds);
 
         $options['crypto_ids'] = $cryptoIds;
+
+        $icons = [];
+        foreach ($cryptoIds as $cryptoId) {
+            if (!empty($options['icons'][$cryptoId])) {
+                $icons[$cryptoId] = $options['icons'][$cryptoId];
+            }
+        }
+        $options['icons'] = $icons;
 
         return true;
     }

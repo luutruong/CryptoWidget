@@ -3,20 +3,20 @@
         <div class="block-container">
             <xf:if is="$title"><h3 class="block-minorHeader">{$title}</h3></xf:if>
             <div class="block-body">
-                <xf:foreach loop="$data" value="$item">
-                    <xf:datalist>
-                        <xf:datarow rowclass="dataList-row--subSection">
-                            <xf:cell>{$item.name} ({$item.symbol})</xf:cell>
-                            <xf:cell></xf:cell>
+                <xf:datalist class="dataList--separatedTop">
+                    <xf:foreach loop="$data" value="$item">
+                        <xf:datarow>
+                            <xf:cell>
+                                <xf:if is="$item.iconUrl">
+                                    <img src="{$item.iconUrl}" width="32" height="32" />
+                                </xf:if>
+                                {$item.symbol}
+                            </xf:cell>
+                            <xf:cell class="dataList-cell--min"
+                                     style="text-align:right">{$item.quotes.USD.price|currency('USD')}</xf:cell>
                         </xf:datarow>
-                        <xf:foreach loop="{$item.quotes}" value="$quote" key="$currency">
-                            <xf:datarow>
-                                <xf:cell>{$currency}</xf:cell>
-                                <xf:cell>{$quote.price}</xf:cell>
-                            </xf:datarow>
-                        </xf:foreach>
-                    </xf:datalist>
-                </xf:foreach>
+                    </xf:foreach>
+                </xf:datalist>
             </div>
         </div>
     </div>
