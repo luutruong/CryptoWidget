@@ -58,12 +58,6 @@ class AutoUpdate
             $fetchData = true;
             if (!empty($cacheData[$cryptoId])) {
                 $fetchData = (($cacheData[$cryptoId]['xf_last_updated'] + $ttl) < \XF::$time);
-
-                \XF::logError(sprintf(
-                    'Crypto exisitng in cache. $refetch=%s, $cryptoId=%s',
-                    $fetchData ? 'true' : 'false',
-                    $cryptoId
-                ));
             }
 
             if (!$fetchData) {
