@@ -1,3 +1,8 @@
+/DevHelper/autogen.json
 /_build
-/_releases
+/_build/
 /_data
+/_data/
+/_releases
+/_releases/
+/vendor/

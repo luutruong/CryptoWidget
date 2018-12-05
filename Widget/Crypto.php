@@ -51,7 +51,7 @@ class Crypto extends AbstractWidget
         $params = parent::getDefaultTemplateParams($context);
 
         if ($context === 'options') {
-            $params['cryptoList'] = Api::getInstance()->getAllCrypto();
+            $params['cryptoList'] = Api::getInstance()->getAllCrypto() ?: [];
             if (!empty($params['options']['crypto_ids'])) {
                 $params['activeCryptos'] = array_filter($params['cryptoList'], function ($item) use ($params) {
                     return in_array($item['id'], $params['options']['crypto_ids']);

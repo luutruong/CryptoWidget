@@ -10,6 +10,9 @@ class Api
 {
     const API_BASE_URL = 'https://api.coinmarketcap.com';
 
+    /**
+     * @var \GuzzleHttp\Client
+     */
     protected $client;
 
     public function __construct()
@@ -35,29 +38,29 @@ class Api
         return self::API_BASE_URL;
     }
 
-    protected function request($method, $endPoint)
+    protected function request($method, $endPoint, array $options = [])
     {
-        $request = $this->client->createRequest($method, $this->getApiVersion() . '/' . $endPoint);
-        $response = $this->client->send($request);
-        $body = $response->getBody()->getContents();
-
-        if ($response->getStatusCode() !== 200) {
-            \XF::logError(sprintf(
-                'API request info $endPoint=%s, $error=%s, $body=%s',
-                $endPoint,
-                $response->getReasonPhrase(),
-                $body
-            ));
-
-            return [];
+        try {
+            $response = $this->client->request($method, $this->getApiVersion() . '/' . $endPoint, $options);
+        } catch (\Exception $e) {
+            return null;
         }
 
+        $body = $response->getBody()->getContents();
         $results = json_decode($body, true);
-        if (isset($results['data'])) {
+
+        if ($response->getStatusCode() === 200 && isset($results['data'])) {
             return $results['data'];
         }
 
-        return [];
+        \XF::logError(sprintf(
+            '[tl] Crypto Widget: API request info $endPoint=%s, $error=%s, $body=%s',
+            $endPoint,
+            $response->getReasonPhrase(),
+            $body
+        ));
+
+        return null;
     }
 
     protected function getApiVersion()

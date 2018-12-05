@@ -6,7 +6,6 @@
 
 namespace Truonglv\CryptoWidget\Cron;
 
-use XF\Entity\Widget;
 use Truonglv\CryptoWidget\Api;
 
 class AutoUpdate
@@ -67,6 +66,9 @@ class AutoUpdate
             self::$requestCount++;
 
             $data = Api::getInstance()->getItem($cryptoId);
+            if ($data === null) {
+                continue;
+            }
             $data['xf_last_updated'] = \XF::$time;
 
             $cacheData[$cryptoId] = $data;
