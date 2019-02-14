@@ -8,7 +8,7 @@ namespace Truonglv\CryptoWidget;
 
 class Api
 {
-    const API_BASE_URL = 'https://api.coinmarketcap.com';
+    const API_BASE_URL = 'https://pro-api.coinmarketcap.com';
 
     /**
      * @var \GuzzleHttp\Client
@@ -17,20 +17,34 @@ class Api
 
     public function __construct()
     {
+        $apiKey = \XF::app()->options()->tl_CryptoWidget_apiKey;
+        if (empty($apiKey)) {
+            throw new \InvalidArgumentException('Must be set apiKey option!');
+        }
+
         $this->client = \XF::app()->http()->createClient([
             'base_url' => $this->getApiBaseUrl(),
-            'exceptions' => \XF::$debugMode
+            'timeout' => 3,
+            'connect_timeout' => 3,
+            'exceptions' => \XF::$debugMode,
+            'headers' => [
+                'X-CMC_PRO_API_KEY' => $apiKey
+            ]
         ]);
     }
 
     public function getAllCrypto()
     {
-        return $this->request('GET', 'listings');
+        return $this->request('GET', 'cryptocurrency/listings/latest');
     }
 
     public function getItem($id)
     {
-        return $this->request('GET', 'ticker/' . urlencode($id));
+        return $this->request('GET', 'cryptocurrency/info', [
+            'query' => [
+                'id' => $id
+            ]
+        ]);
     }
 
     public function getApiBaseUrl()
@@ -65,7 +79,7 @@ class Api
 
     protected function getApiVersion()
     {
-        return 'v2';
+        return 'v1';
     }
 
     /**

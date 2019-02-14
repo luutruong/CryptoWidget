@@ -4,11 +4,11 @@
     "description": "",
     "version_id": 1000100,
     "version_string": "1.0.1",
-    "dev": "",
-    "dev_url": "",
-    "faq_url": "",
-    "support_url": "",
+    "dev": "Truonglv",
+    "dev_url": "https://nobita.me",
+    "faq_url": "https://nobita.me",
+    "support_url": "https://nobita.me",
     "extra_urls": [],
     "require": [],
-    "icon": ""
+    "icon": "icon.png"
 }

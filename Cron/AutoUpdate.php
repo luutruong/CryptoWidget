@@ -7,13 +7,10 @@
 namespace Truonglv\CryptoWidget\Cron;
 
 use Truonglv\CryptoWidget\Api;
+use XF\Timer;
 
 class AutoUpdate
 {
-    const MAX_REQUESTS_PER_MINUTE = 30;
-
-    protected static $requestCount = 0;
-
     public static function updateCryptoData()
     {
         /** @noinspection SpellCheckingInspection */
@@ -48,12 +45,9 @@ class AutoUpdate
 
         // 10 minutes
         $ttl = 10 * 60;
+        $timer = new Timer(3);
 
         foreach ($cryptoIds as $cryptoId) {
-            if (self::$requestCount >= self::MAX_REQUESTS_PER_MINUTE) {
-                break;
-            }
-
             $fetchData = true;
             if (!empty($cacheData[$cryptoId])) {
                 $fetchData = (($cacheData[$cryptoId]['xf_last_updated'] + $ttl) < \XF::$time);
@@ -63,8 +57,6 @@ class AutoUpdate
                 continue;
             }
 
-            self::$requestCount++;
-
             $data = Api::getInstance()->getItem($cryptoId);
             if ($data === null) {
                 continue;
@@ -72,6 +64,9 @@ class AutoUpdate
             $data['xf_last_updated'] = \XF::$time;
 
             $cacheData[$cryptoId] = $data;
+            if ($timer->limitExceeded()) {
+                break;
+            }
         }
 
         $simpleCache->setValue('Truonglv/CryptoWidget', 'cryptoData', $cacheData);

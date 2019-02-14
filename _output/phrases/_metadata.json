@@ -5,6 +5,30 @@
         "version_string": "1.0.0",
         "hash": "6e368c3ec5d56dce3daa44e993506cbe"
     },
+    "option.tl_CryptoWidget_apiKey.txt": {
+        "global_cache": false,
+        "version_id": 1000100,
+        "version_string": "1.0.1",
+        "hash": "62c7594948c1231bbae9f948b1535b7e"
+    },
+    "option_explain.tl_CryptoWidget_apiKey.txt": {
+        "global_cache": false,
+        "version_id": 1000100,
+        "version_string": "1.0.1",
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "option_group.tl_CryptoWidget.txt": {
+        "global_cache": false,
+        "version_id": 1000100,
+        "version_string": "1.0.1",
+        "hash": "7b9e4d563f65f18bd4596e1943cdde95"
+    },
+    "option_group_description.tl_CryptoWidget.txt": {
+        "global_cache": false,
+        "version_id": 1000100,
+        "version_string": "1.0.1",
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
     "tl_crypto_widget.crypto_logo.txt": {
         "global_cache": false,
         "version_id": 1000000,
