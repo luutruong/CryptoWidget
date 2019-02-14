@@ -6,8 +6,8 @@
 
 namespace Truonglv\CryptoWidget\Cron;
 
-use Truonglv\CryptoWidget\Api;
 use XF\Timer;
+use Truonglv\CryptoWidget\Api;
 
 class AutoUpdate
 {
