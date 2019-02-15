@@ -14,6 +14,7 @@ class Api
      * @var \GuzzleHttp\Client
      */
     protected $client;
+    protected $apiKey;
 
     public function __construct()
     {
@@ -22,15 +23,8 @@ class Api
             throw new \InvalidArgumentException('Must be set apiKey option!');
         }
 
-        $this->client = \XF::app()->http()->createClient([
-            'base_url' => $this->getApiBaseUrl(),
-            'timeout' => 3,
-            'connect_timeout' => 3,
-            'exceptions' => \XF::$debugMode,
-            'headers' => [
-                'X-CMC_PRO_API_KEY' => $apiKey
-            ]
-        ]);
+        $this->apiKey = $apiKey;
+        $this->client = \XF::app()->http()->client();
     }
 
     public function getAllCrypto()
@@ -54,9 +48,18 @@ class Api
 
     protected function request($method, $endPoint, array $options = [])
     {
+        $uri = $this->getApiBaseUrl() . '/' . $this->getApiVersion() . '/' . $endPoint;
+        $options = array_merge_recursive([
+            'headers' => [
+                'X-CMC_PRO_API_KEY' => $this->apiKey
+            ]
+        ], $options);
+
         try {
-            $response = $this->client->request($method, $this->getApiVersion() . '/' . $endPoint, $options);
+            $response = $this->client->request($method, $uri, $options);
         } catch (\Exception $e) {
+            $this->logError($e);
+
             return null;
         }
 
@@ -67,8 +70,8 @@ class Api
             return $results['data'];
         }
 
-        \XF::logError(sprintf(
-            '[tl] Crypto Widget: API request info $endPoint=%s, $error=%s, $body=%s',
+        $this->logError(sprintf(
+            'API request info $endPoint=%s, $error=%s, $body=%s',
             $endPoint,
             $response->getReasonPhrase(),
             $body
@@ -80,6 +83,15 @@ class Api
     protected function getApiVersion()
     {
         return 'v1';
+    }
+
+    protected function logError($error)
+    {
+        \XF::logException(
+            ($error instanceof \Exception) ? $error : new \Exception($error),
+            false,
+            '[tl] Crypto Widget: '
+        );
     }
 
     /**
