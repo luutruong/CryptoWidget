@@ -46,7 +46,8 @@ class AutoUpdate
         // 10 minutes
         $ttl = 10 * 60;
         $timer = new Timer(3);
-        $allCrypto = Api::getInstance()->getAllCrypto();
+        $api = Api::getInstance();
+        $allCrypto = $api->getAllCrypto();
 
         foreach ($cryptoIds as $cryptoId) {
             $fetchData = true;
@@ -62,7 +63,7 @@ class AutoUpdate
                 continue;
             }
 
-            $data = Api::getInstance()->getItem($allCrypto[$cryptoId]['symbol']);
+            $data = $api->getItem($allCrypto[$cryptoId]['symbol']);
             if (!$data) {
                 continue;
             }
