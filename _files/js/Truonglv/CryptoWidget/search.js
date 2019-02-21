@@ -60,7 +60,7 @@
 
             if (params.data) {
                 var cryptos = this.options.allowCryptos.filter(function(item) {
-                    return item.id == params.data.id;
+                    return item.id === params.data.id;
                 });
 
                 if (cryptos.length === 0) {
@@ -94,7 +94,7 @@
                 // some values has added
                 for (var j = 0; j < values.length; j++) {
                     var items = this.options.allowCryptos.filter(function(element) {
-                        return element.id == values[j];
+                        return element.id === values[j];
                     });
 
                     items.forEach(function(item) {

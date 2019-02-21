@@ -46,6 +46,7 @@ class AutoUpdate
         // 10 minutes
         $ttl = 10 * 60;
         $timer = new Timer(3);
+        $allCrypto = Api::getInstance()->getAllCrypto();
 
         foreach ($cryptoIds as $cryptoId) {
             $fetchData = true;
@@ -57,13 +58,17 @@ class AutoUpdate
                 continue;
             }
 
-            $data = Api::getInstance()->getItem($cryptoId);
-            if ($data === null) {
+            if (!isset($allCrypto[$cryptoId])) {
+                continue;
+            }
+
+            $data = Api::getInstance()->getItem($allCrypto[$cryptoId]['symbol']);
+            if (!$data) {
                 continue;
             }
             $data['xf_last_updated'] = \XF::$time;
 
-            $cacheData[$cryptoId] = $data;
+            $cacheData[$cryptoId] = array_replace($allCrypto[$cryptoId], $data);
             if ($timer->limitExceeded()) {
                 break;
             }

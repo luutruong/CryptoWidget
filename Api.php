@@ -8,7 +8,7 @@ namespace Truonglv\CryptoWidget;
 
 class Api
 {
-    const API_BASE_URL = 'https://pro-api.coinmarketcap.com';
+    const API_BASE_URL = 'https://min-api.cryptocompare.com';
 
     /**
      * @var \GuzzleHttp\Client
@@ -29,16 +29,51 @@ class Api
 
     public function getAllCrypto()
     {
-        return $this->request('GET', 'cryptocurrency/listings/latest');
+        $cryptoList = $this->request('GET', 'data/all/coinlist');
+        if (!$cryptoList || empty($cryptoList['Data'])) {
+            return [];
+        }
+
+        $results = [];
+        foreach ($cryptoList as $item) {
+            $results[$item['Id']] = [
+                'id' => $item['Id'],
+                'name' => $item['Name'],
+                'symbol' => $item['Symbol'],
+                'fullName' => $item['FullName'],
+                'alterName' => $item['CoinName']
+            ];
+        }
+
+        return $results;
     }
 
     public function getItem($id)
     {
-        return $this->request('GET', 'cryptocurrency/info', [
+        $data = $this->request('GET', 'data/coin/generalinfo', [
             'query' => [
-                'id' => $id
+                'fsyms' => $id,
+                'tsym' => 'USD'
             ]
         ]);
+
+        if (!$data || empty($data['Data'])) {
+            return false;
+        }
+
+        foreach ($data['Data'] as $item) {
+            if ($item['Internal'] === $id) {
+                return [
+                    'iconUrl' => 'https://www.cryptocompare.com' . $item['CoinInfo']['ImageUrl'],
+                    'name' => $item['CoinInfo']['Name'],
+                    'symbol' => $id,
+                    'price' => $item['ConversionInfo']['TotalVolume24H'],
+                    'RAW' => $item
+                ];
+            }
+        }
+
+        return false;
     }
 
     public function getApiBaseUrl()
@@ -50,8 +85,8 @@ class Api
     {
         $uri = $this->getApiBaseUrl() . '/' . $this->getApiVersion() . '/' . $endPoint;
         $options = array_merge_recursive([
-            'headers' => [
-                'X-CMC_PRO_API_KEY' => $this->apiKey
+            'query' => [
+                'api_key' => $this->apiKey
             ]
         ], $options);
 
@@ -66,8 +101,10 @@ class Api
         $body = $response->getBody()->getContents();
         $results = json_decode($body, true);
 
-        if ($response->getStatusCode() === 200 && isset($results['data'])) {
-            return $results['data'];
+        if ($response->getStatusCode() === 200
+            && is_array($results)
+        ) {
+            return $results;
         }
 
         $this->logError(sprintf(
