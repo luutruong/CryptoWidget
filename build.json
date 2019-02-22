@@ -1,8 +1,0 @@
-{
-  "additional_files": [
-    "js/Truonglv/CryptoWidget"
-  ],
-  "minify": [
-    "js/Truonglv/CryptoWidget/search.js"
-  ]
-}

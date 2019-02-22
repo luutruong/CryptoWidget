@@ -6,9 +6,14 @@
 
 namespace Truonglv\CryptoWidget;
 
+use XF\Util\File;
+
 class Api
 {
     const API_BASE_URL = 'https://min-api.cryptocompare.com';
+    const INTERNAL_CRYPTO_LIST_FILENAME = 'tcw_crypto_list.json';
+
+    const CURRENCY_DEFAULT = 'USD';
 
     /**
      * @var \GuzzleHttp\Client
@@ -27,53 +32,55 @@ class Api
         $this->client = \XF::app()->http()->client();
     }
 
-    public function getAllCrypto()
+    public function getAllCrypto($force = false)
     {
+        $filePath = 'internal-data://' . self::INTERNAL_CRYPTO_LIST_FILENAME;
+        if (File::abstractedPathExists($filePath) && !$force) {
+            $json = \XF::app()->fs()->read($filePath);
+            if ($json) {
+                $data = json_decode($json, true);
+                if (is_array($data)) {
+                    return $data;
+                }
+            }
+        }
+
         $cryptoList = $this->request('GET', 'data/all/coinlist');
         if (!$cryptoList || empty($cryptoList['Data'])) {
             return [];
         }
 
         $results = [];
-        foreach ($cryptoList as $item) {
+        foreach ($cryptoList['Data'] as $item) {
             $results[$item['Id']] = [
                 'id' => $item['Id'],
                 'name' => $item['Name'],
                 'symbol' => $item['Symbol'],
-                'fullName' => $item['FullName'],
-                'alterName' => $item['CoinName']
+                'iconUrl' => isset($item['ImageUrl']) ? ($cryptoList['BaseImageUrl'] . $item['ImageUrl']) : null
             ];
         }
 
+        File::writeToAbstractedPath($filePath, json_encode($results));
         return $results;
     }
 
     public function getItem($id)
     {
-        $data = $this->request('GET', 'data/coin/generalinfo', [
+        $data = $this->request('GET', 'data/price', [
             'query' => [
-                'fsyms' => $id,
-                'tsym' => 'USD'
+                'fsym' => $id,
+                'tsyms' => self::CURRENCY_DEFAULT
             ]
         ]);
 
-        if (!$data || empty($data['Data'])) {
+        if (!$data || !isset($data[self::CURRENCY_DEFAULT])) {
             return false;
         }
 
-        foreach ($data['Data'] as $item) {
-            if ($item['Internal'] === $id) {
-                return [
-                    'iconUrl' => 'https://www.cryptocompare.com' . $item['CoinInfo']['ImageUrl'],
-                    'name' => $item['CoinInfo']['Name'],
-                    'symbol' => $id,
-                    'price' => $item['ConversionInfo']['TotalVolume24H'],
-                    'RAW' => $item
-                ];
-            }
-        }
-
-        return false;
+        return [
+            'symbol' => $id,
+            'price' => $data[self::CURRENCY_DEFAULT]
+        ];
     }
 
     public function getApiBaseUrl()
@@ -83,7 +90,7 @@ class Api
 
     protected function request($method, $endPoint, array $options = [])
     {
-        $uri = $this->getApiBaseUrl() . '/' . $this->getApiVersion() . '/' . $endPoint;
+        $uri = $this->getApiBaseUrl() . '/' . $endPoint;
         $options = array_merge_recursive([
             'query' => [
                 'api_key' => $this->apiKey
@@ -104,6 +111,17 @@ class Api
         if ($response->getStatusCode() === 200
             && is_array($results)
         ) {
+            if (isset($results['Response']) && $results['Response'] === 'Error') {
+                $this->logError(sprintf(
+                    'API request info $endPoint=%s, $error=%s, $body=%s',
+                    $endPoint,
+                    $response->getReasonPhrase(),
+                    $body
+                ));
+
+                return null;
+            }
+
             return $results;
         }
 
@@ -115,11 +133,6 @@ class Api
         ));
 
         return null;
-    }
-
-    protected function getApiVersion()
-    {
-        return 'v1';
     }
 
     protected function logError($error)

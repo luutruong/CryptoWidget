@@ -11,6 +11,8 @@ use Truonglv\CryptoWidget\Api;
 
 class AutoUpdate
 {
+    const CACHE_TTL = -600;
+
     public static function updateCryptoData()
     {
         /** @noinspection SpellCheckingInspection */
@@ -22,17 +24,17 @@ class AutoUpdate
             return;
         }
 
-        $cryptoIds = [];
+        $cryptoNames = [];
         foreach ($widgets as $widget) {
             if (empty($widget->options['crypto_ids'])) {
                 continue;
             }
 
-            $cryptoIds = array_merge($cryptoIds, $widget->options['crypto_ids']);
+            $cryptoNames = array_merge($cryptoNames, $widget->options['crypto_ids']);
         }
 
-        $cryptoIds = array_unique($cryptoIds);
-        if (!$cryptoIds) {
+        $cryptoNames = array_unique($cryptoNames);
+        if (!$cryptoNames) {
             return;
         }
 
@@ -43,33 +45,38 @@ class AutoUpdate
             $cacheData = [];
         }
 
-        // 10 minutes
-        $ttl = 10 * 60;
+        $ttl = self::CACHE_TTL;
         $timer = new Timer(3);
         $api = Api::getInstance();
-        $allCrypto = $api->getAllCrypto();
+        $allCrypto = $api->getAllCrypto(true);
 
-        foreach ($cryptoIds as $cryptoId) {
+        foreach ($cryptoNames as $cryptoName) {
+            preg_match('#(\d+)#', $cryptoName, $matches);
+            if (!$matches) {
+                continue;
+            }
+
+            $id = $matches[1];
             $fetchData = true;
-            if (!empty($cacheData[$cryptoId])) {
-                $fetchData = (($cacheData[$cryptoId]['xf_last_updated'] + $ttl) < \XF::$time);
+            if (!empty($cacheData[$id])) {
+                $fetchData = (($cacheData[$id]['xf_last_updated'] + $ttl) < \XF::$time);
             }
 
             if (!$fetchData) {
                 continue;
             }
 
-            if (!isset($allCrypto[$cryptoId])) {
+            if (!isset($allCrypto[$id])) {
                 continue;
             }
 
-            $data = $api->getItem($allCrypto[$cryptoId]['symbol']);
+            $data = $api->getItem($allCrypto[$id]['symbol']);
             if (!$data) {
                 continue;
             }
             $data['xf_last_updated'] = \XF::$time;
 
-            $cacheData[$cryptoId] = array_replace($allCrypto[$cryptoId], $data);
+            $cacheData[$cryptoName] = array_replace($allCrypto[$id], $data);
             if ($timer->limitExceeded()) {
                 break;
             }

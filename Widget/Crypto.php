@@ -27,13 +27,13 @@ class Crypto extends AbstractWidget
         $cacheData = $simpleCache->getValue('Truonglv/CryptoWidget', 'cryptoData');
 
         $data = [];
-        foreach ($options['crypto_ids'] as $cryptoId) {
-            if (isset($cacheData[$cryptoId])) {
-                $data[$cryptoId] = $cacheData[$cryptoId];
+        foreach ($options['crypto_ids'] as $cryptoName) {
+            if (isset($cacheData[$cryptoName])) {
+                $data[$cryptoName] = $cacheData[$cryptoName];
                 if (!empty($options['icons'])
-                    && isset($options['icons'][$cryptoId])
+                    && isset($options['icons'][$cryptoName])
                 ) {
-                    $data[$cryptoId]['iconUrl'] = $options['icons'][$cryptoId];
+                    $data[$cryptoName]['iconUrl'] = $options['icons'][$cryptoName];
                 }
             }
         }
@@ -46,22 +46,6 @@ class Crypto extends AbstractWidget
         return $this->renderer('tl_crypto_widget_crypto', $viewParams);
     }
 
-    protected function getDefaultTemplateParams($context)
-    {
-        $params = parent::getDefaultTemplateParams($context);
-
-        if ($context === 'options') {
-            $params['cryptoList'] = Api::getInstance()->getAllCrypto() ?: [];
-            if (!empty($params['options']['crypto_ids'])) {
-                $params['activeCryptos'] = array_filter($params['cryptoList'], function ($item) use ($params) {
-                    return in_array($item['id'], $params['options']['crypto_ids']);
-                });
-            }
-        }
-
-        return $params;
-    }
-
     public function getOptionsTemplate()
     {
         return 'admin:tl_crypto_widget_options_crypto';
@@ -69,24 +53,31 @@ class Crypto extends AbstractWidget
 
     public function verifyOptions(\XF\Http\Request $request, array &$options, &$error = null)
     {
-        $options = $request->filter([
-            'crypto_ids' => 'str',
-            'icons' => 'array'
+        $options += $request->filter([
+            'crypto_ids' => 'str'
         ]);
 
         $cryptoIds = explode(',', $options['crypto_ids']);
-        $cryptoIds = array_map('intval', $cryptoIds);
+        $cryptoIds = array_map('trim', $cryptoIds);
         $cryptoIds = array_unique($cryptoIds);
 
-        $options['crypto_ids'] = $cryptoIds;
-
-        $icons = [];
+        $allCrypto = Api::getInstance()->getAllCrypto();
+        $validCrypto = [];
         foreach ($cryptoIds as $cryptoId) {
-            if (!empty($options['icons'][$cryptoId])) {
-                $icons[$cryptoId] = $options['icons'][$cryptoId];
+            preg_match('#(\d+)#', $cryptoId, $matches);
+            if (!$matches) {
+                continue;
             }
+
+            $id = $matches[1];
+            if (!isset($allCrypto[$id])) {
+                continue;
+            }
+
+            $validCrypto[] = $cryptoId;
         }
-        $options['icons'] = $icons;
+
+        $options['crypto_ids'] = $validCrypto;
 
         return true;
     }
