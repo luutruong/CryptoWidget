@@ -61,6 +61,7 @@ class Api
         }
 
         File::writeToAbstractedPath($filePath, json_encode($results));
+
         return $results;
     }
 
